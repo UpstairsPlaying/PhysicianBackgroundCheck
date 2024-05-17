@@ -50,11 +50,22 @@ function performBackgroundCheck(physician) {
         details: [
             'Credentials Verified: MD',
             'Board Certification Verified: Yes',
+            'State Licenses: ' + physician.taxonomies.map(t => `${t.state}: ${t.license}`).join(', '),
             'Criminal Background Check: No records found',
             'Malpractice History: No cases found',
             'Sanctions and Disciplinary Actions: No actions found',
             'DEA Registration: Valid',
-            'Continuous Monitoring: No new alerts'
+            'Continuous Monitoring: No new alerts',
+            'Education: Medical School - XYZ University, Residency - ABC Hospital',
+            'Professional Affiliations: AMA, AOA',
+            'Continuing Medical Education: 30 CME credits completed in the last year',
+            'Hospital Privileges: ABC Hospital, XYZ Clinic',
+            'Employment History: Previous employer - DEF Hospital, Duration - 2015-2020',
+            'Peer Reviews: Positive reviews from peers',
+            'Patient Reviews and Ratings: 4.8/5 from 120 reviews',
+            'Research and Publications: 10 research papers published',
+            'Languages Spoken: English, Spanish',
+            'Special Skills or Certifications: ACLS, BLS certified'
         ]
     };
 }

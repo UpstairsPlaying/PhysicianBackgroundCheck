@@ -77,9 +77,15 @@ function displayPhysicianDetails(physician) {
     addressItem.textContent = `Address: ${physician.address}`;
     detailsList.appendChild(addressItem);
 
-    const stateLicensesItem = document.createElement('li');
-    stateLicensesItem.textContent = `State Licenses: ${physician.state_licenses.join(', ')}`;
-    detailsList.appendChild(stateLicensesItem);
+    const stateLicensesHeader = document.createElement('li');
+    stateLicensesHeader.textContent = 'State Licenses:';
+    detailsList.appendChild(stateLicensesHeader);
+
+    physician.state_licenses.forEach(state_license => {
+        const stateLicenseItem = document.createElement('li');
+        stateLicenseItem.textContent = `${state_license.state}: ${state_license.license}`;
+        detailsList.appendChild(stateLicenseItem);
+    });
 
     const backgroundCheckHeader = document.createElement('li');
     backgroundCheckHeader.textContent = 'Background Check:';

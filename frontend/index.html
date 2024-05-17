@@ -1,1 +1,25 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCP Background Screening</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>HCP Background Screening</h1>
+        <form id="screeningForm">
+            <label for="hcpName">HCP Name:</label>
+            <input type="text" id="hcpName" name="hcpName" required>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="results" class="hidden">
+            <h2>Screening Results</h2>
+            <p id="resultText"></p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

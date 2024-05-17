@@ -1,0 +1,15 @@
+{
+  "name": "hcp-screening",
+  "version": "1.0.0",
+  "description": "HCP Background Screening",
+  "main": "screen.js",
+  "scripts": {
+    "start": "node screen.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "body-parser": "^1.19.0"
+  },
+  "author": "",
+  "license": "ISC"
+}

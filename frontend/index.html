@@ -11,4 +11,15 @@
         <h1>HCP Background Screening</h1>
         <form id="screeningForm">
             <label for="hcpName">HCP Name:</label>
-            <input
+            <input type="text" id="hcpName" name="hcpName" required>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="results" class="hidden">
+            <h2>Screening Results</h2>
+            <p id="resultText"></p>
+            <ul id="detailsList"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

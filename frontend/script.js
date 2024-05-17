@@ -1,7 +1,7 @@
 document.getElementById('screeningForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const hcpName = document.getElementById('hcpName').value;
-    
+
     fetch('/api/screen', {
         method: 'POST',
         headers: {

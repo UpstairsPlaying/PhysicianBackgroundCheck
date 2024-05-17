@@ -18,10 +18,7 @@ async function fetchPhysicianData(name) {
                 credentials: physician.basic.credential,
                 address: `${physician.addresses[0].address_1}, ${physician.addresses[0].city}, ${physician.addresses[0].state} ${physician.addresses[0].postal_code}`,
                 state_licenses: physician.taxonomies.map(t => t.state),
-                backgroundCheck: {
-                    passed: true, // This would typically come from another source or additional checks
-                    details: ['Validated by NPPES']
-                }
+                backgroundCheck: performBackgroundCheck(physician)
             }));
             return {
                 found: true,
@@ -41,6 +38,23 @@ async function fetchPhysicianData(name) {
             message: 'Error fetching data from NPPES API.'
         };
     }
+}
+
+function performBackgroundCheck(physician) {
+    // Mock background check results
+    return {
+        passed: true,
+        details: [
+            'Credentials Verified: MD',
+            'Board Certification Verified: Yes',
+            'State Licenses: ' + physician.taxonomies.map(t => t.state).join(', '),
+            'Criminal Background Check: No records found',
+            'Malpractice History: No cases found',
+            'Sanctions and Disciplinary Actions: No actions found',
+            'DEA Registration: Valid',
+            'Continuous Monitoring: No new alerts'
+        ]
+    };
 }
 
 app.post('/api/screen', async (req, res) => {

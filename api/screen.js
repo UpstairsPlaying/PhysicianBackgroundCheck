@@ -7,24 +7,25 @@ const app = express();
 app.use(bodyParser.json());
 
 async function fetchPhysicianData(name) {
-    const apiUrl = `https://npiregistry.cms.hhs.gov/api/?version=2.1&first_name=${encodeURIComponent(name.split(' ')[0])}&last_name=${encodeURIComponent(name.split(' ')[1])}&limit=1`;
+    const apiUrl = `https://npiregistry.cms.hhs.gov/api/?version=2.1&first_name=${encodeURIComponent(name.split(' ')[0])}&last_name=${encodeURIComponent(name.split(' ')[1])}&limit=10`;
 
     try {
         const response = await axios.get(apiUrl);
         if (response.data.results && response.data.results.length > 0) {
-            const physician = response.data.results[0];
+            const physicians = response.data.results.map(physician => ({
+                name: `${physician.basic.first_name} ${physician.basic.last_name}`,
+                npi: physician.number,
+                credentials: physician.basic.credential,
+                address: `${physician.addresses[0].address_1}, ${physician.addresses[0].city}, ${physician.addresses[0].state} ${physician.addresses[0].postal_code}`,
+                state_licenses: physician.taxonomies.map(t => t.state),
+                backgroundCheck: {
+                    passed: true, // This would typically come from another source or additional checks
+                    details: ['Validated by NPPES']
+                }
+            }));
             return {
                 found: true,
-                physician: {
-                    name: `${physician.basic.first_name} ${physician.basic.last_name}`,
-                    npi: physician.number,
-                    credentials: physician.basic.credential,
-                    address: `${physician.addresses[0].address_1}, ${physician.addresses[0].city}, ${physician.addresses[0].state} ${physician.addresses[0].postal_code}`,
-                    backgroundCheck: {
-                        passed: true, // This would typically come from another source or additional checks
-                        details: ['Validated by NPPES']
-                    }
-                }
+                physicians: physicians
             };
         } else {
             return {
@@ -46,6 +47,10 @@ app.post('/api/screen', async (req, res) => {
     const { name } = req.body;
     const result = await fetchPhysicianData(name);
     res.json(result);
+});
+
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
 });
 
 module.exports = app;

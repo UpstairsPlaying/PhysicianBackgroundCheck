@@ -21,4 +21,5 @@ app.post('/api/screen', (req, res) => {
     res.json(result);
 });
 
+// Export the app as a module
 module.exports = app;

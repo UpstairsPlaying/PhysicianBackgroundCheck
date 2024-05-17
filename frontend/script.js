@@ -2,7 +2,7 @@ document.getElementById('screeningForm').addEventListener('submit', function(eve
     event.preventDefault();
     const hcpName = document.getElementById('hcpName').value;
     
-    fetch('/screen', {
+    fetch('/api/screen', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

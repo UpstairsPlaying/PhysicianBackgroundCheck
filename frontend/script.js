@@ -19,50 +19,87 @@ document.getElementById('screeningForm').addEventListener('submit', function(eve
         detailsList.innerHTML = '';
 
         if (data.found) {
-            const physician = data.physician;
-            resultText.textContent = `Physician Found: ${physician.name}`;
-            resultText.className = 'pass';
-
-            const credentialsItem = document.createElement('li');
-            credentialsItem.textContent = `Credentials: ${physician.credentials}`;
-            detailsList.appendChild(credentialsItem);
-
-            const npiItem = document.createElement('li');
-            npiItem.textContent = `NPI: ${physician.npi}`;
-            detailsList.appendChild(npiItem);
-
-            const addressItem = document.createElement('li');
-            addressItem.textContent = `Address: ${physician.address}`;
-            detailsList.appendChild(addressItem);
-
-            const backgroundCheckHeader = document.createElement('li');
-            backgroundCheckHeader.textContent = 'Background Check:';
-            detailsList.appendChild(backgroundCheckHeader);
-
-            physician.backgroundCheck.details.forEach(detail => {
-                const detailItem = document.createElement('li');
-                detailItem.textContent = detail;
-                detailsList.appendChild(detailItem);
-            });
-
-            if (physician.backgroundCheck.passed) {
-                const passItem = document.createElement('li');
-                passItem.textContent = 'Background Check Passed';
-                passItem.className = 'pass';
-                detailsList.appendChild(passItem);
+            if (data.physicians.length === 1) {
+                displayPhysicianDetails(data.physicians[0]);
             } else {
-                const failItem = document.createElement('li');
-                failItem.textContent = 'Background Check Failed';
-                failItem.className = 'fail';
-                detailsList.appendChild(failItem);
+                resultText.textContent = `Multiple matches found for "${hcpName}". Please select one:`;
+                resultText.className = 'info';
+                const selectList = document.createElement('select');
+                selectList.id = 'physicianSelect';
+                data.physicians.forEach((physician, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.text = `${physician.name} (${physician.address})`;
+                    selectList.appendChild(option);
+                });
+                detailsList.appendChild(selectList);
+                const selectButton = document.createElement('button');
+                selectButton.textContent = 'Select';
+                selectButton.addEventListener('click', function() {
+                    const selectedIndex = document.getElementById('physicianSelect').value;
+                    displayPhysicianDetails(data.physicians[selectedIndex]);
+                });
+                detailsList.appendChild(selectButton);
             }
-
         } else {
-            resultText.textContent = data.message;
+            resultText.textContent = `Physician Not Found: ${data.name}`;
             resultText.className = 'fail';
+
+            const messageItem = document.createElement('li');
+            messageItem.textContent = data.message;
+            detailsList.appendChild(messageItem);
         }
 
         resultsDiv.classList.remove('hidden');
     })
     .catch(error => console.error('Error:', error));
 });
+
+function displayPhysicianDetails(physician) {
+    const resultText = document.getElementById('resultText');
+    const detailsList = document.getElementById('detailsList');
+
+    // Clear previous details
+    detailsList.innerHTML = '';
+
+    resultText.textContent = `Physician Found: ${physician.name}`;
+    resultText.className = 'pass';
+
+    const credentialsItem = document.createElement('li');
+    credentialsItem.textContent = `Credentials: ${physician.credentials}`;
+    detailsList.appendChild(credentialsItem);
+
+    const npiItem = document.createElement('li');
+    npiItem.textContent = `NPI: ${physician.npi}`;
+    detailsList.appendChild(npiItem);
+
+    const addressItem = document.createElement('li');
+    addressItem.textContent = `Address: ${physician.address}`;
+    detailsList.appendChild(addressItem);
+
+    const stateLicensesItem = document.createElement('li');
+    stateLicensesItem.textContent = `State Licenses: ${physician.state_licenses.join(', ')}`;
+    detailsList.appendChild(stateLicensesItem);
+
+    const backgroundCheckHeader = document.createElement('li');
+    backgroundCheckHeader.textContent = 'Background Check:';
+    detailsList.appendChild(backgroundCheckHeader);
+
+    physician.backgroundCheck.details.forEach(detail => {
+        const detailItem = document.createElement('li');
+        detailItem.textContent = detail;
+        detailsList.appendChild(detailItem);
+    });
+
+    if (physician.backgroundCheck.passed) {
+        const passItem = document.createElement('li');
+        passItem.textContent = 'Background Check Passed';
+        passItem.className = 'pass';
+        detailsList.appendChild(passItem);
+    } else {
+        const failItem = document.createElement('li');
+        failItem.textContent = 'Background Check Failed';
+        failItem.className = 'fail';
+        detailsList.appendChild(failItem);
+    }
+}

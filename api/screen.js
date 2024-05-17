@@ -17,7 +17,10 @@ async function fetchPhysicianData(name) {
                 npi: physician.number,
                 credentials: physician.basic.credential,
                 address: `${physician.addresses[0].address_1}, ${physician.addresses[0].city}, ${physician.addresses[0].state} ${physician.addresses[0].postal_code}`,
-                state_licenses: physician.taxonomies.map(t => t.state),
+                state_licenses: physician.taxonomies.map(t => ({
+                    state: t.state,
+                    license: t.license
+                })),
                 backgroundCheck: performBackgroundCheck(physician)
             }));
             return {
@@ -47,7 +50,6 @@ function performBackgroundCheck(physician) {
         details: [
             'Credentials Verified: MD',
             'Board Certification Verified: Yes',
-            'State Licenses: ' + physician.taxonomies.map(t => t.state).join(', '),
             'Criminal Background Check: No records found',
             'Malpractice History: No cases found',
             'Sanctions and Disciplinary Actions: No actions found',

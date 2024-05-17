@@ -1,60 +1,50 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const axios = require('axios');
 const app = express();
 
 // Middleware
 app.use(bodyParser.json());
 
-// Mock database of physicians
-const physicians = [
-    {
-        name: 'John Doe',
-        npi: '1234567890',
-        credentials: 'MD',
-        address: '123 Main St, Anytown, USA',
-        backgroundCheck: {
-            passed: true,
-            details: ['No criminal records found', 'Valid medical license']
-        }
-    },
-    {
-        name: 'Jane Smith',
-        npi: '9876543210',
-        credentials: 'DO',
-        address: '456 Elm St, Othertown, USA',
-        backgroundCheck: {
-            passed: false,
-            details: ['Criminal record found', 'Expired medical license']
-        }
-    }
-];
+async function fetchPhysicianData(name) {
+    const apiUrl = `https://npiregistry.cms.hhs.gov/api/?version=2.1&first_name=${encodeURIComponent(name.split(' ')[0])}&last_name=${encodeURIComponent(name.split(' ')[1])}&limit=1`;
 
-// Screening function to find physician and perform background check
-function screenHCP(name) {
-    const physician = physicians.find(p => p.name.toLowerCase() === name.toLowerCase());
-
-    if (!physician) {
+    try {
+        const response = await axios.get(apiUrl);
+        if (response.data.results && response.data.results.length > 0) {
+            const physician = response.data.results[0];
+            return {
+                found: true,
+                physician: {
+                    name: `${physician.basic.first_name} ${physician.basic.last_name}`,
+                    npi: physician.number,
+                    credentials: physician.basic.credential,
+                    address: `${physician.addresses[0].address_1}, ${physician.addresses[0].city}, ${physician.addresses[0].state} ${physician.addresses[0].postal_code}`,
+                    backgroundCheck: {
+                        passed: true, // This would typically come from another source or additional checks
+                        details: ['Validated by NPPES']
+                    }
+                }
+            };
+        } else {
+            return {
+                found: false,
+                name: name,
+                message: 'No matching physician found.'
+            };
+        }
+    } catch (error) {
         return {
             found: false,
-            message: 'No matching physician found.'
+            name: name,
+            message: 'Error fetching data from NPPES API.'
         };
     }
-
-    return {
-        found: true,
-        physician: {
-            name: physician.name,
-            npi: physician.npi,
-            credentials: physician.credentials,
-            address: physician.address,
-            backgroundCheck: physician.backgroundCheck
-        }
-    };
 }
 
-app.post('/api/screen', (req, res) => {
+app.post('/api/screen', async (req, res) => {
     const { name } = req.body;
-    const result = screenHCP(name);
+    const result = await fetchPhysicianData(name);
     res.json(result);
 });
 

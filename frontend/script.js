@@ -15,6 +15,7 @@ document.getElementById('screeningForm').addEventListener('submit', function(eve
         const resultsDiv = document.getElementById('results');
         const detailsList = document.getElementById('detailsList');
 
+        // Clear previous details
         detailsList.innerHTML = '';
 
         if (data.found) {
@@ -60,11 +61,13 @@ function displayPhysicianDetails(physician) {
     const resultText = document.getElementById('resultText');
     const detailsList = document.getElementById('detailsList');
 
+    // Clear previous details
     detailsList.innerHTML = '';
 
     resultText.textContent = `Physician Found: ${physician.name}`;
     resultText.className = 'alert alert-success';
 
+    // Create sections for details
     const sections = {
         'Education': physician.backgroundCheck.details.education,
         'Residency': physician.backgroundCheck.details.residency,
@@ -86,9 +89,35 @@ function displayPhysicianDetails(physician) {
     };
 
     for (const [sectionTitle, sectionContent] of Object.entries(sections)) {
-        const sectionItem = document.createElement('div');
-        sectionItem.className = 'mb-3';
-        sectionItem.innerHTML = `<h5>${sectionTitle}</h5><p>${sectionContent}</p>`;
-        detailsList.appendChild(sectionItem);
+        const section = document.createElement('div');
+        section.className = 'mb-3';
+
+        const sectionHeader = document.createElement('h5');
+        sectionHeader.textContent = sectionTitle;
+        section.appendChild(sectionHeader);
+
+        const sectionBody = document.createElement('p');
+        sectionBody.textContent = sectionContent;
+        section.appendChild(sectionBody);
+
+        detailsList.appendChild(section);
     }
+
+    // Add download PDF button functionality
+    document.getElementById('downloadPdf').addEventListener('click', function() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.text(`Physician Found: ${physician.name}`, 10, 10);
+        let yPosition = 20;
+
+        for (const [sectionTitle, sectionContent] of Object.entries(sections)) {
+            doc.text(sectionTitle, 10, yPosition);
+            yPosition += 10;
+            doc.text(sectionContent, 10, yPosition);
+            yPosition += 10;
+        }
+
+        doc.save(`${physician.name}_details.pdf`);
+    });
 }

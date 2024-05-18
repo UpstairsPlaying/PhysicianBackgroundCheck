@@ -83,7 +83,7 @@ function displayPhysicianDetails(physician) {
 
     physician.state_licenses.forEach(state_license => {
         const stateLicenseItem = document.createElement('li');
-        stateLicenseItem.textContent = `${state_license.state}: ${state_license.license}`;
+        stateLicenseItem.textContent = `${state_license.state}: ${state_license.license} (Status: ${state_license.status})`;
         detailsList.appendChild(stateLicenseItem);
     });
 

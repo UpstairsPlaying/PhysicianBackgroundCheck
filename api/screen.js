@@ -47,21 +47,48 @@ async function fetchPhysicianData(name) {
 async function fetchAdditionalData(npi) {
     // Mock implementation. Replace with actual API calls.
     const education = await fetchEducation(npi);
+    const residency = await fetchResidency(npi);
+    const affiliations = await fetchAffiliations(npi);
+    const cme = await fetchCME(npi);
     const ratings = await fetchRatings(npi);
     const publications = await fetchPublications(npi);
     const employmentHistory = await fetchEmploymentHistory(npi);
+    const languages = await fetchLanguages(npi);
+    const skills = await fetchSkills(npi);
+    const hospitalPrivileges = await fetchHospitalPrivileges(npi);
 
     return {
         education,
+        residency,
+        affiliations,
+        cme,
         ratings,
         publications,
-        employmentHistory
+        employmentHistory,
+        languages,
+        skills,
+        hospitalPrivileges
     };
 }
 
 async function fetchEducation(npi) {
     // Mock API call for education
-    return 'Medical School - XYZ University, Residency - ABC Hospital';
+    return 'Medical School - XYZ University';
+}
+
+async function fetchResidency(npi) {
+    // Mock API call for residency
+    return 'Residency - ABC Hospital';
+}
+
+async function fetchAffiliations(npi) {
+    // Mock API call for professional affiliations
+    return 'American Medical Association (AMA), American Osteopathic Association (AOA)';
+}
+
+async function fetchCME(npi) {
+    // Mock API call for continuing medical education
+    return '30 CME credits completed in the last year (January 2023 - December 2023)';
 }
 
 async function fetchRatings(npi) {
@@ -76,7 +103,22 @@ async function fetchPublications(npi) {
 
 async function fetchEmploymentHistory(npi) {
     // Mock API call for employment history
-    return 'Previous employer - DEF Hospital, Duration - 2015-2020';
+    return 'Current: DEF Hospital, Previous: GHI Clinic';
+}
+
+async function fetchLanguages(npi) {
+    // Mock API call for languages spoken
+    return 'English, Spanish';
+}
+
+async function fetchSkills(npi) {
+    // Mock API call for special skills or certifications
+    return 'ACLS, BLS certified';
+}
+
+async function fetchHospitalPrivileges(npi) {
+    // Mock API call for hospital privileges
+    return 'ABC Hospital, XYZ Clinic';
 }
 
 async function fetchLicenseStatuses(taxonomies) {
@@ -101,26 +143,23 @@ function performBackgroundCheck(physician, additionalData) {
     // Mock background check results
     return {
         passed: true,
-        details: [
-            'Credentials Verified: MD',
-            'Board Certification Verified: Yes',
-            `State Licenses: ${physician.taxonomies.map(t => `${t.state}: ${t.license}`).join(', ')}`,
-            'Criminal Background Check: No records found',
-            'Malpractice History: No cases found',
-            'Sanctions and Disciplinary Actions: No actions found',
-            'DEA Registration: Valid',
-            'Continuous Monitoring: No new alerts',
-            `Education: ${additionalData.education}`,
-            'Professional Affiliations: AMA, AOA',
-            'Continuing Medical Education: 30 CME credits completed in the last year',
-            'Hospital Privileges: ABC Hospital, XYZ Clinic',
-            `Employment History: ${additionalData.employmentHistory}`,
-            'Peer Reviews: Positive reviews from peers',
-            `Patient Reviews and Ratings: ${additionalData.ratings}`,
-            `Research and Publications: ${additionalData.publications}`,
-            'Languages Spoken: English, Spanish',
-            'Special Skills or Certifications: ACLS, BLS certified'
-        ]
+        details: {
+            education: additionalData.education,
+            residency: additionalData.residency,
+            affiliations: additionalData.affiliations,
+            cme: additionalData.cme,
+            ratings: additionalData.ratings,
+            publications: additionalData.publications,
+            employmentHistory: additionalData.employmentHistory,
+            languages: additionalData.languages,
+            skills: additionalData.skills,
+            hospitalPrivileges: additionalData.hospitalPrivileges,
+            criminalCheck: 'No records found',
+            malpracticeHistory: 'No cases found',
+            sanctions: 'No actions found',
+            deaRegistration: 'Valid',
+            continuousMonitoring: 'No new alerts'
+        }
     };
 }
 

@@ -35,6 +35,7 @@ async function fetchPhysicianData(name) {
             };
         }
     } catch (error) {
+        console.error('Error fetching data from NPPES API:', error.message);
         return {
             found: false,
             name: name,
@@ -70,52 +71,42 @@ async function fetchAdditionalData(npi) {
 }
 
 async function fetchEducation(npi) {
-    // Replace with actual API call
     return await axios.get(`https://www.nationalpublicdata.com/api/education/${npi}`).then(response => response.data.education);
 }
 
 async function fetchResidency(npi) {
-    // Replace with actual API call
     return await axios.get(`https://www.nationalpublicdata.com/api/residency/${npi}`).then(response => response.data.residency);
 }
 
 async function fetchAffiliations(npi) {
-    // Replace with actual API call
     return await axios.get(`https://www.nationalpublicdata.com/api/affiliations/${npi}`).then(response => response.data.affiliations);
 }
 
 async function fetchCME(npi) {
-    // Replace with actual API call
     return await axios.get(`https://www.nationalpublicdata.com/api/cme/${npi}`).then(response => response.data.cme);
 }
 
 async function fetchRatings(npi) {
-    // Replace with actual API call
     return await axios.get(`https://www.healthgrades.com/api/ratings/${npi}`).then(response => response.data.ratings);
 }
 
 async function fetchPublications(npi) {
-    // Replace with actual API call
     return await axios.get(`https://pubmed.ncbi.nlm.nih.gov/api/publications/${npi}`).then(response => response.data.publications);
 }
 
 async function fetchEmploymentHistory(npi) {
-    // Replace with actual API call
     return await axios.get(`https://www.nationalpublicdata.com/api/employment/${npi}`).then(response => response.data.employmentHistory);
 }
 
 async function fetchLanguages(npi) {
-    // Replace with actual API call
     return await axios.get(`https://www.nationalpublicdata.com/api/languages/${npi}`).then(response => response.data.languages);
 }
 
 async function fetchSkills(npi) {
-    // Replace with actual API call
     return await axios.get(`https://www.nationalpublicdata.com/api/skills/${npi}`).then(response => response.data.skills);
 }
 
 async function fetchHospitalPrivileges(npi) {
-    // Replace with actual API call
     return await axios.get(`https://www.nationalpublicdata.com/api/hospital-privileges/${npi}`).then(response => response.data.hospitalPrivileges);
 }
 

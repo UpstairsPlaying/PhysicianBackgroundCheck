@@ -1,10 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 
-// Middleware
 app.use(bodyParser.json());
+
+const resultsFilePath = path.join(__dirname, 'results.json');
 
 async function fetchPhysicianData(name) {
     const apiUrl = `https://npiregistry.cms.hhs.gov/api/?version=2.1&first_name=${encodeURIComponent(name.split(' ')[0])}&last_name=${encodeURIComponent(name.split(' ')[1])}&limit=10`;
@@ -45,7 +48,6 @@ async function fetchPhysicianData(name) {
 }
 
 async function fetchAdditionalData(npi) {
-    // Mock implementation. Replace with actual API calls.
     const education = await fetchEducation(npi);
     const residency = await fetchResidency(npi);
     const affiliations = await fetchAffiliations(npi);
@@ -72,59 +74,57 @@ async function fetchAdditionalData(npi) {
 }
 
 async function fetchEducation(npi) {
-    // Mock API call for education
-    return 'Medical School - XYZ University';
+    // Replace with actual API call
+    return await axios.get(`https://www.nationalpublicdata.com/api/education/${npi}`).then(response => response.data.education);
 }
 
 async function fetchResidency(npi) {
-    // Mock API call for residency
-    return 'Residency - ABC Hospital';
+    // Replace with actual API call
+    return await axios.get(`https://www.nationalpublicdata.com/api/residency/${npi}`).then(response => response.data.residency);
 }
 
 async function fetchAffiliations(npi) {
-    // Mock API call for professional affiliations
-    return 'American Medical Association (AMA), American Osteopathic Association (AOA)';
+    // Replace with actual API call
+    return await axios.get(`https://www.nationalpublicdata.com/api/affiliations/${npi}`).then(response => response.data.affiliations);
 }
 
 async function fetchCME(npi) {
-    // Mock API call for continuing medical education
-    return '30 CME credits completed in the last year (January 2023 - December 2023)';
+    // Replace with actual API call
+    return await axios.get(`https://www.nationalpublicdata.com/api/cme/${npi}`).then(response => response.data.cme);
 }
 
 async function fetchRatings(npi) {
-    // Mock API call for ratings
-    return '4.8/5 from 120 reviews';
+    // Replace with actual API call
+    return await axios.get(`https://www.healthgrades.com/api/ratings/${npi}`).then(response => response.data.ratings);
 }
 
 async function fetchPublications(npi) {
-    // Mock API call for publications
-    return '10 research papers published';
+    // Replace with actual API call
+    return await axios.get(`https://pubmed.ncbi.nlm.nih.gov/api/publications/${npi}`).then(response => response.data.publications);
 }
 
 async function fetchEmploymentHistory(npi) {
-    // Mock API call for employment history
-    return 'Current: DEF Hospital, Previous: GHI Clinic';
+    // Replace with actual API call
+    return await axios.get(`https://www.nationalpublicdata.com/api/employment/${npi}`).then(response => response.data.employmentHistory);
 }
 
 async function fetchLanguages(npi) {
-    // Mock API call for languages spoken
-    return 'English, Spanish';
+    // Replace with actual API call
+    return await axios.get(`https://www.nationalpublicdata.com/api/languages/${npi}`).then(response => response.data.languages);
 }
 
 async function fetchSkills(npi) {
-    // Mock API call for special skills or certifications
-    return 'ACLS, BLS certified';
+    // Replace with actual API call
+    return await axios.get(`https://www.nationalpublicdata.com/api/skills/${npi}`).then(response => response.data.skills);
 }
 
 async function fetchHospitalPrivileges(npi) {
-    // Mock API call for hospital privileges
-    return 'ABC Hospital, XYZ Clinic';
+    // Replace with actual API call
+    return await axios.get(`https://www.nationalpublicdata.com/api/hospital-privileges/${npi}`).then(response => response.data.hospitalPrivileges);
 }
 
 async function fetchLicenseStatuses(taxonomies) {
-    // Mock API call for license statuses
     return await Promise.all(taxonomies.map(async (taxonomy) => {
-        // Replace with actual API call to fetch license status
         const status = await fetchLicenseStatus(taxonomy.state, taxonomy.license);
         return {
             state: taxonomy.state,
@@ -135,12 +135,10 @@ async function fetchLicenseStatuses(taxonomies) {
 }
 
 async function fetchLicenseStatus(state, license) {
-    // Mock API call for license status
-    return 'Active'; // Replace with actual license status from the API
+    return await axios.get(`https://www.fsmb.org/api/licenses/${state}/${license}`).then(response => response.data.status);
 }
 
 function performBackgroundCheck(physician, additionalData) {
-    // Mock background check results
     return {
         passed: true,
         details: {
@@ -166,7 +164,17 @@ function performBackgroundCheck(physician, additionalData) {
 app.post('/api/screen', async (req, res) => {
     const { name } = req.body;
     const result = await fetchPhysicianData(name);
+    if (result.found) {
+        const results = JSON.parse(fs.readFileSync(resultsFilePath, 'utf8'));
+        results.push(result);
+        fs.writeFileSync(resultsFilePath, JSON.stringify(results, null, 2));
+    }
     res.json(result);
+});
+
+app.get('/api/results', (req, res) => {
+    const results = JSON.parse(fs.readFileSync(resultsFilePath, 'utf8'));
+    res.json(results);
 });
 
 app.listen(3000, () => {

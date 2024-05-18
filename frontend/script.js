@@ -92,20 +92,3 @@ function displayPhysicianDetails(physician) {
         detailsList.appendChild(sectionItem);
     }
 }
-
-document.getElementById('viewResults').addEventListener('click', function() {
-    fetch('/api/results')
-    .then(response => response.json())
-    .then(data => {
-        const resultsContainer = document.getElementById('resultsContainer');
-        resultsContainer.innerHTML = '';
-
-        data.forEach((result, index) => {
-            const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
-            resultItem.innerHTML = `<h4>Result ${index + 1}</h4><pre>${JSON.stringify(result, null, 2)}</pre>`;
-            resultsContainer.appendChild(resultItem);
-        });
-    })
-    .catch(error => console.error('Error:', error));
-});

@@ -1,13 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
 const app = express();
 
 app.use(bodyParser.json());
-
-const resultsFilePath = path.join(__dirname, 'results.json');
 
 async function fetchPhysicianData(name) {
     const apiUrl = `https://npiregistry.cms.hhs.gov/api/?version=2.1&first_name=${encodeURIComponent(name.split(' ')[0])}&last_name=${encodeURIComponent(name.split(' ')[1])}&limit=10`;
@@ -164,17 +160,7 @@ function performBackgroundCheck(physician, additionalData) {
 app.post('/api/screen', async (req, res) => {
     const { name } = req.body;
     const result = await fetchPhysicianData(name);
-    if (result.found) {
-        const results = JSON.parse(fs.readFileSync(resultsFilePath, 'utf8'));
-        results.push(result);
-        fs.writeFileSync(resultsFilePath, JSON.stringify(results, null, 2));
-    }
     res.json(result);
-});
-
-app.get('/api/results', (req, res) => {
-    const results = JSON.parse(fs.readFileSync(resultsFilePath, 'utf8'));
-    res.json(results);
 });
 
 app.listen(3000, () => {

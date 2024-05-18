@@ -69,11 +69,23 @@ function displayPhysicianDetails(physician) {
 
     // Create sections for details
     const sections = {
-        'Credentials': physician.credentials,
-        'NPI': physician.npi,
-        'Address': physician.address,
+        'Education': physician.backgroundCheck.details.education,
+        'Residency': physician.backgroundCheck.details.residency,
+        'Professional Affiliations': physician.backgroundCheck.details.affiliations,
+        'Continuing Medical Education': physician.backgroundCheck.details.cme,
+        'Hospital Privileges': physician.backgroundCheck.details.hospitalPrivileges,
+        'Employment History': physician.backgroundCheck.details.employmentHistory,
+        'Peer Reviews': 'Positive reviews from peers',
+        'Patient Reviews and Ratings': physician.backgroundCheck.details.ratings,
+        'Research and Publications': physician.backgroundCheck.details.publications,
+        'Languages Spoken': physician.backgroundCheck.details.languages,
+        'Special Skills or Certifications': physician.backgroundCheck.details.skills,
         'State Licenses': physician.state_licenses.map(license => `${license.state}: ${license.license} (Status: ${license.status})`).join(', '),
-        'Background Check': physician.backgroundCheck.details.join(', ')
+        'Criminal Background Check': physician.backgroundCheck.details.criminalCheck,
+        'Malpractice History': physician.backgroundCheck.details.malpracticeHistory,
+        'Sanctions and Disciplinary Actions': physician.backgroundCheck.details.sanctions,
+        'DEA Registration': physician.backgroundCheck.details.deaRegistration,
+        'Continuous Monitoring': physician.backgroundCheck.details.continuousMonitoring
     };
 
     for (const [sectionTitle, sectionContent] of Object.entries(sections)) {

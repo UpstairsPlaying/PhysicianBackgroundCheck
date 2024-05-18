@@ -23,9 +23,10 @@ document.getElementById('screeningForm').addEventListener('submit', function(eve
                 displayPhysicianDetails(data.physicians[0]);
             } else {
                 resultText.textContent = `Multiple matches found for "${hcpName}". Please select one:`;
-                resultText.className = 'info';
+                resultText.className = 'alert alert-info';
                 const selectList = document.createElement('select');
                 selectList.id = 'physicianSelect';
+                selectList.className = 'form-control mb-3';
                 data.physicians.forEach((physician, index) => {
                     const option = document.createElement('option');
                     option.value = index;
@@ -35,6 +36,7 @@ document.getElementById('screeningForm').addEventListener('submit', function(eve
                 detailsList.appendChild(selectList);
                 const selectButton = document.createElement('button');
                 selectButton.textContent = 'Select';
+                selectButton.className = 'btn btn-secondary';
                 selectButton.addEventListener('click', function() {
                     const selectedIndex = document.getElementById('physicianSelect').value;
                     displayPhysicianDetails(data.physicians[selectedIndex]);
@@ -43,14 +45,14 @@ document.getElementById('screeningForm').addEventListener('submit', function(eve
             }
         } else {
             resultText.textContent = `Physician Not Found: ${data.name}`;
-            resultText.className = 'fail';
+            resultText.className = 'alert alert-danger';
 
-            const messageItem = document.createElement('li');
+            const messageItem = document.createElement('div');
             messageItem.textContent = data.message;
             detailsList.appendChild(messageItem);
         }
 
-        resultsDiv.classList.remove('hidden');
+        resultsDiv.classList.remove('d-none');
     })
     .catch(error => console.error('Error:', error));
 });
@@ -63,49 +65,47 @@ function displayPhysicianDetails(physician) {
     detailsList.innerHTML = '';
 
     resultText.textContent = `Physician Found: ${physician.name}`;
-    resultText.className = 'pass';
+    resultText.className = 'alert alert-success';
 
-    const credentialsItem = document.createElement('li');
-    credentialsItem.textContent = `Credentials: ${physician.credentials}`;
-    detailsList.appendChild(credentialsItem);
+    // Create sections for details
+    const sections = {
+        'Credentials': physician.credentials,
+        'NPI': physician.npi,
+        'Address': physician.address,
+        'State Licenses': physician.state_licenses.map(license => `${license.state}: ${license.license} (Status: ${license.status})`).join(', '),
+        'Background Check': physician.backgroundCheck.details.join(', ')
+    };
 
-    const npiItem = document.createElement('li');
-    npiItem.textContent = `NPI: ${physician.npi}`;
-    detailsList.appendChild(npiItem);
+    for (const [sectionTitle, sectionContent] of Object.entries(sections)) {
+        const section = document.createElement('div');
+        section.className = 'mb-3';
 
-    const addressItem = document.createElement('li');
-    addressItem.textContent = `Address: ${physician.address}`;
-    detailsList.appendChild(addressItem);
+        const sectionHeader = document.createElement('h5');
+        sectionHeader.textContent = sectionTitle;
+        section.appendChild(sectionHeader);
 
-    const stateLicensesHeader = document.createElement('li');
-    stateLicensesHeader.textContent = 'State Licenses:';
-    detailsList.appendChild(stateLicensesHeader);
+        const sectionBody = document.createElement('p');
+        sectionBody.textContent = sectionContent;
+        section.appendChild(sectionBody);
 
-    physician.state_licenses.forEach(state_license => {
-        const stateLicenseItem = document.createElement('li');
-        stateLicenseItem.textContent = `${state_license.state}: ${state_license.license} (Status: ${state_license.status})`;
-        detailsList.appendChild(stateLicenseItem);
-    });
-
-    const backgroundCheckHeader = document.createElement('li');
-    backgroundCheckHeader.textContent = 'Background Check:';
-    detailsList.appendChild(backgroundCheckHeader);
-
-    physician.backgroundCheck.details.forEach(detail => {
-        const detailItem = document.createElement('li');
-        detailItem.textContent = detail;
-        detailsList.appendChild(detailItem);
-    });
-
-    if (physician.backgroundCheck.passed) {
-        const passItem = document.createElement('li');
-        passItem.textContent = 'Background Check Passed';
-        passItem.className = 'pass';
-        detailsList.appendChild(passItem);
-    } else {
-        const failItem = document.createElement('li');
-        failItem.textContent = 'Background Check Failed';
-        failItem.className = 'fail';
-        detailsList.appendChild(failItem);
+        detailsList.appendChild(section);
     }
+
+    // Add download PDF button functionality
+    document.getElementById('downloadPdf').addEventListener('click', function() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.text(`Physician Found: ${physician.name}`, 10, 10);
+        let yPosition = 20;
+
+        for (const [sectionTitle, sectionContent] of Object.entries(sections)) {
+            doc.text(sectionTitle, 10, yPosition);
+            yPosition += 10;
+            doc.text(sectionContent, 10, yPosition);
+            yPosition += 10;
+        }
+
+        doc.save(`${physician.name}_details.pdf`);
+    });
 }
